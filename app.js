@@ -87,7 +87,7 @@ function myFunction() {
                     estado = 7;
                 }
                 else {
-                    llenarerror(char, fila, columna);
+                    llenarerror("error lexico", "\"" + char + "\"no pertenece al lenguaje", fila, columna);
                 }
                 break;
             }
@@ -110,11 +110,14 @@ function myFunction() {
             }
             case 2: {
                 if (char == "\n") {
+                    llenar(lexema, columna, fila, "comentario");
+                    lexema = "";
                     estado = 0;
                 }
                 else {
                     estado = 2;
                 }
+                lexema += char;
                 break;
             }
             case 3: {
@@ -123,11 +126,14 @@ function myFunction() {
                 }
                 else {
                     estado = 3;
+                    lexema += char;
                 }
                 break;
             }
             case 4: {
                 if (char == "/") {
+                    llenar(lexema, columna, fila, "comentariomulti");
+                    lexema = "";
                     estado = 0;
                 }
                 else {
@@ -200,177 +206,179 @@ function myFunction() {
                     lexema += char;
                     estado = 6;
                 }
-                else if (lexema == "int") {
-                    llenar(lexema, columna, fila, "int");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "double") {
-                    llenar(lexema, columna, fila, "double");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "char") {
-                    llenar(lexema, columna, fila, "char");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "bool") {
-                    llenar(lexema, columna, fila, "bool");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "string") {
-                    llenar(lexema, columna, fila, "string");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "void") {
-                    llenar(lexema, columna, fila, "void");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "main") {
-                    llenar(lexema, columna, fila, "main");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "console") {
-                    llenar(lexema, columna, fila, "console");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "write") {
-                    llenar(lexema, columna, fila, "write");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "if") {
-                    llenar(lexema, columna, fila, "if");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "switch") {
-                    llenar(lexema, columna, fila, "switch");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "for") {
-                    llenar(lexema, columna, fila, "for");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "while") {
-                    llenar(lexema, columna, fila, "while");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "do") {
-                    llenar(lexema, columna, fila, "do");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "return") {
-                    llenar(lexema, columna, fila, "return");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "break") {
-                    llenar(lexema, columna, fila, "break");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "continue") {
-                    llenar(lexema, columna, fila, "continue");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "html") {
-                    llenar(lexema, columna, fila, "html");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "head") {
-                    llenar(lexema, columna, fila, "head");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "body") {
-                    llenar(lexema, columna, fila, "body");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "title") {
-                    llenar(lexema, columna, fila, "title");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "div") {
-                    llenar(lexema, columna, fila, "div");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "br") {
-                    llenar(lexema, columna, fila, "br");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "p") {
-                    llenar(lexema, columna, fila, "p");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "button") {
-                    llenar(lexema, columna, fila, "button");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "label") {
-                    llenar(lexema, columna, fila, "label");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
-                else if (lexema == "input") {
-                    llenar(lexema, columna, fila, "input");
-                    lexema = "";
-                    estado = 0;
-                    i--;
-                }
                 else if (char.match(/[a-z]/i)) {
                     lexema += char;
                     estado = 7;
                 }
                 else {
-                    llenar(lexema, columna, fila, "ID");
-                    lexema = "";
-                    estado = 0;
-                    i--;
+                    if (lexema == "int") {
+                        llenar(lexema, columna, fila, "int");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "double") {
+                        llenar(lexema, columna, fila, "double");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "char") {
+                        llenar(lexema, columna, fila, "char");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "bool") {
+                        llenar(lexema, columna, fila, "bool");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "string") {
+                        llenar(lexema, columna, fila, "string");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "void") {
+                        llenar(lexema, columna, fila, "void");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "main") {
+                        llenar(lexema, columna, fila, "main");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "console") {
+                        llenar(lexema, columna, fila, "console");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "write") {
+                        llenar(lexema, columna, fila, "write");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "if") {
+                        llenar(lexema, columna, fila, "if");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "switch") {
+                        llenar(lexema, columna, fila, "switch");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "for") {
+                        llenar(lexema, columna, fila, "for");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "while") {
+                        llenar(lexema, columna, fila, "while");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "do") {
+                        llenar(lexema, columna, fila, "do");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "return") {
+                        llenar(lexema, columna, fila, "return");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "break") {
+                        llenar(lexema, columna, fila, "break");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "continue") {
+                        llenar(lexema, columna, fila, "continue");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "html") {
+                        llenar(lexema, columna, fila, "html");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "head") {
+                        llenar(lexema, columna, fila, "head");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "body") {
+                        llenar(lexema, columna, fila, "body");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "title") {
+                        llenar(lexema, columna, fila, "title");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "div") {
+                        llenar(lexema, columna, fila, "div");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "br") {
+                        llenar(lexema, columna, fila, "br");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "p") {
+                        llenar(lexema, columna, fila, "p");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "button") {
+                        llenar(lexema, columna, fila, "button");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "label") {
+                        llenar(lexema, columna, fila, "label");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "input") {
+                        llenar(lexema, columna, fila, "input");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else {
+                        llenar(lexema, columna, fila, "ID");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
                 }
                 break;
             }
@@ -388,14 +396,240 @@ function myFunction() {
             }
         }
     }
-    for (var i = 0; i < listatoken.length; i++) {
-        alert(listatoken[i].lexema + "   " + listatoken[i].tipo);
-    }
+    tam = listatoken.length;
+    pos = 0;
+    actual = listatoken[0];
+    traduccion = " #traduccion del archivO \n";
+    sinc();
     // aqui va el sintacti
-    document.getElementById("myTextarea1").value = "Fifth Avenue, New York City" + temp;
+    document.getElementById("myTextarea1").value = traduccion;
 }
-function llenarerror(char, fila, columna) {
+var tam = 0;
+var actual = new tokens();
+;
+var pos = 0;
+var traduccion = " #traduccion del archivO \n";
+var traduc = null;
+function sinc() {
+    if (actual.tipo == null) {
+        return;
+    }
+    else if (actual.tipo == "comentario") {
+        traduccion += "#" + actual.lexema + "\n";
+        sig();
+        sinc();
+    }
+    else if (actual.tipo == "comentariomulti") {
+        traduccion += "'''" + actual.lexema + "'''\n";
+        sig();
+        sinc();
+    }
+    else if (actual.tipo == "int" || actual.tipo == "string" || actual.tipo == "double" || actual.tipo == "char" || actual.tipo == "bool") {
+        sig();
+        if (actual.tipo == "ID") {
+            traduc = actual.lexema;
+            sig();
+            if (actual.tipo == "igual" || actual.tipo == "puntocoma" || actual.tipo == "coma") {
+                variable();
+            }
+            else if (actual.tipo == "para") {
+                sig();
+                funcion();
+            }
+            else {
+                llenarerror("error sintactico", "espera ( ó =, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+                sinc();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera ID, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+            sinc();
+        }
+    }
+    else {
+        sig();
+        sinc();
+    }
+}
+function variable() {
+    if (actual.tipo == "puntocoma") {
+        sig();
+        traduccion += "var " + traduc + "\n";
+        sinc();
+    }
+    else if (actual.tipo == "coma") {
+        sig();
+        traduc += ",";
+        if (actual.tipo == "ID") {
+            traduc += actual.lexema;
+            sig();
+            variable();
+        }
+        else {
+            llenarerror("error sintactico", "espera ID, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+            sinc();
+        }
+    }
+    else if (actual.tipo == "igual") {
+        sig();
+        traduc += "=";
+        valores();
+    }
+}
+function valores() {
+    if (actual.tipo == "digit") {
+        traduc += actual.lexema;
+        sig();
+        operandos();
+    }
+    else if (actual.tipo == "valor") {
+        traduc += "\"" + actual.lexema + "\"";
+        sig();
+        cadenas();
+    }
+    else if (actual.tipo == "ID") {
+        traduc += actual.lexema;
+        sig();
+        ids();
+    }
+}
+function operandos() {
+    if (actual.tipo == "digit") {
+        llenarerror("error sintactico", "espera un operando, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+        sig();
+        sinc();
+    }
+    else if (actual.tipo == "mas" || actual.tipo == "por" || actual.tipo == "div" || actual.tipo == "menos") {
+        traduc += actual.lexema;
+        sig();
+        if (actual.tipo == "digit") {
+            traduc += actual.lexema;
+            sig();
+            operandos();
+        }
+        else if (actual.tipo == "ID") {
+            traduc += actual.lexema;
+            sig();
+            ids();
+        }
+        else {
+            llenarerror("error sintactico", "espera digit, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+            sinc();
+        }
+    }
+    else if (actual.tipo == "puntocoma") {
+        variable();
+    }
+    else {
+        llenarerror("error sintactico", "espera digit, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+        sig();
+        sinc();
+    }
+}
+function cadenas() {
+    if (actual.tipo == "valor") {
+        llenarerror("error sintactico", "espera un operando, se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+        sig();
+        sinc();
+    }
+    else if (actual.tipo == "mas") {
+        traduc += actual.lexema;
+        sig();
+        if (actual.tipo == "digit") {
+            traduc += actual.lexema;
+            sig();
+            operandos();
+        }
+        else if (actual.tipo == "valor") {
+            traduc += "\"" + actual.lexema + "\"";
+            sig();
+            cadenas();
+        }
+        else if (actual.tipo == "ID") {
+            traduc += actual.lexema;
+            sig();
+            ids();
+        }
+        else {
+            llenarerror("error sintactico", "espera digit o cadena, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+            sinc();
+        }
+    }
+    else if (actual.tipo == "puntocoma") {
+        variable();
+    }
+}
+function ids() {
+    if (actual.tipo == "digit" || actual.tipo == "valor" || actual.tipo == "cadena") {
+        llenarerror("error sintactico", "espera un operando, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+        sig();
+        sinc();
+    }
+    else if (actual.tipo == "mas" || actual.tipo == "por" || actual.tipo == "div" || actual.tipo == "menos") {
+        traduc += actual.lexema;
+        sig();
+        if (actual.tipo == "digit") {
+            traduc += actual.lexema;
+            sig();
+            operandos();
+        }
+        else if (actual.tipo == "valor") {
+            traduc += actual.lexema;
+            sig();
+            cadenas();
+        }
+        else if (actual.tipo == "ID") {
+            traduc += actual.lexema;
+            sig();
+            ids();
+        }
+        else {
+            llenarerror("error sintactico", "espera digit, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+            sinc();
+        }
+    }
+    else if (actual.tipo == "para") {
+        traduc += actual.lexema;
+        sig();
+        parametros();
+    }
+    else if (actual.tipo == "puntocoma") {
+        variable();
+    }
+    else {
+        llenarerror("error sintactico", "espera digit, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+        sig();
+        sinc();
+    }
+}
+function parametros() {
+    if (actual.tipo == "parc") {
+        traduc += actual.lexema;
+        sig();
+        ids();
+    }
+}
+function funcion() { }
+function sig() {
+    if (pos != tam - 1) {
+        pos++;
+    }
+    else {
+        actual = new tokens();
+        return;
+    }
+    // alert (actual.tipo) ;
+    actual = listatoken[pos];
+}
+function llenarerror(tip, char, fila, columna) {
     var temp = new tokens();
+    temp.tipo = tip;
     temp.lexema = char;
     temp.fila = fila;
     temp.columna = columna;
