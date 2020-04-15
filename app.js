@@ -3,6 +3,7 @@ var listatoken = [];
 var listatokenerror = [];
 function myFunction() {
     listatoken = [];
+    listatokenerror = [];
     var temp = document.getElementById("myTextarea").value;
     temp = temp.split("   ").join("");
     temp = temp + "\n";
@@ -409,10 +410,10 @@ function myFunction() {
 }
 var tam = 0;
 var actual = new tokens();
-;
 var pos = 0;
 var traduccion = " #traduccion del archivO \n";
-var traduc = null;
+var espacios = "";
+var traduc = new String("\b");
 function sinc() {
     if (actual.tipo == null) {
         return;
@@ -434,11 +435,36 @@ function sinc() {
             sig();
             if (actual.tipo == "igual" || actual.tipo == "puntocoma" || actual.tipo == "coma") {
                 variable();
+                sinc();
             }
             else if (actual.tipo == "para") {
                 traduc += actual.lexema;
                 sig();
                 funcion();
+                sinc();
+            }
+            else {
+                llenarerror("error sintactico", "espera ( , = , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+                sinc();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera ID, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+            sinc();
+        }
+    }
+    else if (actual.tipo == "void") {
+        sig();
+        if (actual.tipo == "ID" || actual.tipo == "main") {
+            traduc = actual.lexema;
+            sig();
+            if (actual.tipo == "para") {
+                traduc += actual.lexema;
+                sig();
+                funcion();
+                sinc();
             }
             else {
                 llenarerror("error sintactico", "espera ( , = , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
@@ -460,8 +486,7 @@ function sinc() {
 function variable() {
     if (actual.tipo == "puntocoma") {
         sig();
-        traduccion += "var " + traduc + "\n";
-        sinc();
+        traduccion += espacios + "var " + traduc + "\n";
     }
     else if (actual.tipo == "coma") {
         sig();
@@ -474,7 +499,6 @@ function variable() {
         else {
             llenarerror("error sintactico", "espera ID, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
             sig();
-            sinc();
         }
     }
     else if (actual.tipo == "igual") {
@@ -485,7 +509,6 @@ function variable() {
     else {
         llenarerror("error sintactico", "espera , = o ; , e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
         sig();
-        sinc();
     }
 }
 function valores() {
@@ -509,7 +532,6 @@ function operandos() {
     if (actual.tipo == "digit") {
         llenarerror("error sintactico", "espera un operando, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
         sig();
-        sinc();
     }
     else if (actual.tipo == "mas" || actual.tipo == "por" || actual.tipo == "div" || actual.tipo == "menos") {
         traduc += actual.lexema;
@@ -527,7 +549,6 @@ function operandos() {
         else {
             llenarerror("error sintactico", "espera digit, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
             sig();
-            sinc();
         }
     }
     else if (actual.tipo == "puntocoma") {
@@ -536,14 +557,12 @@ function operandos() {
     else {
         llenarerror("error sintactico", "espera operador, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
         sig();
-        sinc();
     }
 }
 function cadenas() {
     if (actual.tipo == "valor") {
         llenarerror("error sintactico", "espera un operando, se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
         sig();
-        sinc();
     }
     else if (actual.tipo == "mas") {
         traduc += actual.lexema;
@@ -566,21 +585,20 @@ function cadenas() {
         else {
             llenarerror("error sintactico", "espera digit o cadena, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
             sig();
-            sinc();
         }
     }
     else if (actual.tipo == "puntocoma") {
         variable();
     }
-    llenarerror("error sintactico", "espera un operando, se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
-    sig();
-    sinc();
+    else {
+        llenarerror("error sintactico", "espera un operando, se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+        sig();
+    }
 }
 function ids() {
     if (actual.tipo == "digit" || actual.tipo == "valor" || actual.tipo == "cadena") {
         llenarerror("error sintactico", "espera un operando, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
         sig();
-        sinc();
     }
     else if (actual.tipo == "mas" || actual.tipo == "por" || actual.tipo == "div" || actual.tipo == "menos") {
         traduc += actual.lexema;
@@ -603,7 +621,6 @@ function ids() {
         else {
             llenarerror("error sintactico", "espera digit, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
             sig();
-            sinc();
         }
     }
     else if (actual.tipo == "para") {
@@ -618,7 +635,6 @@ function ids() {
     else {
         llenarerror("error sintactico", "espera operador, se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
         sig();
-        sinc();
     }
 }
 function parametros() {
@@ -644,18 +660,83 @@ function parametros() {
         else {
             llenarerror("error sintactico", "espera id, se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
             sig();
-            sinc();
         }
     }
     else if (actual.tipo == "parc") {
         traduc += actual.lexema;
         sig();
     }
+    else {
+        llenarerror("error sintactico", "espera ) o una variable, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+        sig();
+    }
 }
 function funcion() {
-    parametros();
-    traduccion += "def " + traduc;
-    sinc();
+    if (traduc == "main(") {
+        parametros();
+        traduccion += "def " + traduc + ":\n";
+        if (actual.tipo == "llavea") {
+            sig();
+            espacios += "\t";
+            todo();
+            if (actual.tipo == "llavec") {
+                espacios = espacios.substr(1);
+                traduccion += "if __name__ = \"__main__\":\n  main()\n";
+                sinc();
+            }
+            else {
+                llenarerror("error sintactico", "espera }, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera { , se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+    else {
+        parametros();
+        traduccion += "def " + traduc + ":\n";
+        if (actual.tipo == "llavea") {
+            sig();
+            espacios += "\t";
+            todo();
+            if (actual.tipo == "llavec") {
+                espacios = espacios.substr(1);
+                sinc();
+            }
+            else {
+                llenarerror("error sintactico", "espera }, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera { , se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+}
+function todo() {
+    if (actual.tipo == "int" || actual.tipo == "string" || actual.tipo == "double" || actual.tipo == "char" || actual.tipo == "bool") {
+        sig();
+        if (actual.tipo == "ID") {
+            traduc = actual.lexema;
+            sig();
+            if (actual.tipo == "igual" || actual.tipo == "puntocoma" || actual.tipo == "coma") {
+                variable();
+                todo();
+            }
+            else {
+                llenarerror("error sintactico", "espera ( , = , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera ID, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+            todo();
+        }
+    }
 }
 function sig() {
     if (pos != tam - 1) {
