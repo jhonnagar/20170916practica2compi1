@@ -55,7 +55,7 @@ function myFunction() {
                     llenar(char, columna, fila, "mayor");
                 }
                 else if (char == "!") {
-                    llenar(char, columna, fila, "exclaa");
+                    llenar(char, columna, fila, "not");
                 }
                 else if (char == "+") {
                     llenar(char, columna, fila, "mas");
@@ -112,13 +112,14 @@ function myFunction() {
             case 2: {
                 if (char == "\n") {
                     llenar(lexema, columna, fila, "comentario");
+                    i--;
                     lexema = "";
                     estado = 0;
                 }
                 else {
                     estado = 2;
+                    lexema += char;
                 }
-                lexema += char;
                 break;
             }
             case 3: {
@@ -272,6 +273,24 @@ function myFunction() {
                         estado = 0;
                         i--;
                     }
+                    else if (lexema == "true") {
+                        llenar(lexema, columna, fila, "true");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "false") {
+                        llenar(lexema, columna, fila, "false");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
+                    else if (lexema == "else") {
+                        llenar(lexema, columna, fila, "else");
+                        lexema = "";
+                        estado = 0;
+                        i--;
+                    }
                     else if (lexema == "switch") {
                         llenar(lexema, columna, fila, "switch");
                         lexema = "";
@@ -401,11 +420,11 @@ function myFunction() {
     pos = 0;
     actual = listatoken[0];
     traduccion = " #traduccion del archivO \n";
+    espacios = "";
     sinc();
     for (var i = 0; i < listatokenerror.length; i++) {
         alert(listatokenerror[i].lexema);
     }
-    // aqui va el sintacti
     document.getElementById("myTextarea1").value = traduccion;
 }
 var tam = 0;
@@ -435,6 +454,7 @@ function sinc() {
             sig();
             if (actual.tipo == "igual" || actual.tipo == "puntocoma" || actual.tipo == "coma") {
                 variable();
+                traduccion += espacios + "var " + traduc + "\n";
                 sinc();
             }
             else if (actual.tipo == "para") {
@@ -486,7 +506,6 @@ function sinc() {
 function variable() {
     if (actual.tipo == "puntocoma") {
         sig();
-        traduccion += espacios + "var " + traduc + "\n";
     }
     else if (actual.tipo == "coma") {
         sig();
@@ -680,12 +699,14 @@ function funcion() {
             espacios += "\t";
             todo();
             if (actual.tipo == "llavec") {
-                espacios = espacios.substr(1);
+                espacios = "";
                 traduccion += "if __name__ = \"__main__\":\n  main()\n";
+                sig();
                 sinc();
             }
             else {
                 llenarerror("error sintactico", "espera }, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                espacios = "";
                 sig();
             }
         }
@@ -702,11 +723,13 @@ function funcion() {
             espacios += "\t";
             todo();
             if (actual.tipo == "llavec") {
-                espacios = espacios.substr(1);
+                espacios = "";
+                sig();
                 sinc();
             }
             else {
                 llenarerror("error sintactico", "espera }, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                espacios = "";
                 sig();
             }
         }
@@ -717,13 +740,24 @@ function funcion() {
     }
 }
 function todo() {
-    if (actual.tipo == "int" || actual.tipo == "string" || actual.tipo == "double" || actual.tipo == "char" || actual.tipo == "bool") {
+    if (actual.tipo == "comentario") {
+        traduccion += espacios + "#" + actual.lexema + "\n";
+        sig();
+        todo();
+    }
+    else if (actual.tipo == "comentariomulti") {
+        traduccion += espacios + "'''" + actual.lexema + "'''\n";
+        sig();
+        todo();
+    }
+    else if (actual.tipo == "int" || actual.tipo == "string" || actual.tipo == "double" || actual.tipo == "char" || actual.tipo == "bool") {
         sig();
         if (actual.tipo == "ID") {
             traduc = actual.lexema;
             sig();
             if (actual.tipo == "igual" || actual.tipo == "puntocoma" || actual.tipo == "coma") {
                 variable();
+                traduccion += espacios + "var " + traduc + "\n";
                 todo();
             }
             else {
@@ -734,7 +768,274 @@ function todo() {
         else {
             llenarerror("error sintactico", "espera ID, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
             sig();
+        }
+    }
+    else if (actual.tipo == "if") {
+        sig();
+        traduc = "if ";
+        if (actual.tipo == "para") {
+            sig();
+            cmp();
+            traduccion += espacios + traduc + ":\n";
+            if (actual.tipo == "llavea") {
+                sig();
+                espacios += "\t";
+                todo();
+                if (actual.tipo == "llavec") {
+                    sig();
+                    espacios = espacios.substr(1);
+                    elif();
+                    todo();
+                }
+                else {
+                    llenarerror("error sintactico", "espera }, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                    espacios = espacios.substr(1);
+                    sig();
+                }
+            }
+            else {
+                llenarerror("error sintactico", "espera { , se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera ( , se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+    else if (actual.tipo == "while") {
+        sig();
+        traduc = "while ";
+        if (actual.tipo == "para") {
+            sig();
+            cmp();
+            traduccion += espacios + traduc + ":\n";
+            if (actual.tipo == "llavea") {
+                sig();
+                espacios += "\t";
+                todo();
+                if (actual.tipo == "llavec") {
+                    sig();
+                    espacios = espacios.substr(1);
+                    todo();
+                }
+                else {
+                    llenarerror("error sintactico", "espera }, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                    espacios = espacios.substr(1);
+                    sig();
+                }
+            }
+            else {
+                llenarerror("error sintactico", "espera { , se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera ( , se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+    else if (actual.tipo == "ID") {
+        traduc = actual.lexema;
+        sig();
+        if (actual.tipo == "igual" || actual.tipo == "coma") {
+            variable();
+            traduccion += espacios + traduc + "\n";
             todo();
+        }
+        else {
+            llenarerror("error sintactico", "espera ( , = , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+}
+function cmp() {
+    if (actual.tipo == "ID") {
+        traduc += actual.lexema;
+        sig();
+        idscmp();
+    }
+    else if (actual.tipo == "true") {
+        traduc += actual.lexema;
+        sig();
+        idscmp();
+    }
+    else if (actual.tipo == "not") {
+        traduc += " not ";
+        sig();
+        cmp();
+    }
+    else if (actual.tipo == "digit") {
+        traduc += actual.lexema;
+        sig();
+        digitcmp();
+    }
+    else if (actual.tipo == "false") {
+        traduc += actual.lexema;
+        sig();
+        idscmp();
+    }
+    else if (actual.tipo == "parc") {
+        sig();
+    }
+}
+function digitcmp() {
+    if (actual.tipo == "digit" || actual.tipo == "true" || actual.tipo == "false") {
+        llenarerror("error sintactico", "espera un operando logico, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+        sig();
+    }
+    else if (actual.tipo == "mayor" || actual.tipo == "menor") {
+        traduc += actual.lexema;
+        sig();
+        if (actual.tipo == "igual") {
+            sig();
+            traduc += "=";
+        }
+        if (actual.tipo == "digit") {
+            traduc += actual.lexema;
+            sig();
+            idscmp();
+        }
+        else if (actual.tipo == "ID") {
+            traduc += actual.lexema;
+            sig();
+            idscmp();
+        }
+        else {
+            llenarerror("error sintactico", "espera ID, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+    else if (actual.tipo == "igual" || actual.tipo == "not") {
+        traduc += actual.lexema;
+        sig();
+        if (actual.tipo == "igual") {
+            traduc += actual.lexema;
+            sig();
+            if (actual.tipo == "digit") {
+                traduc += actual.lexema;
+                sig();
+                idscmp();
+            }
+            else if (actual.tipo == "ID") {
+                traduc += actual.lexema;
+                sig();
+                idscmp();
+            }
+            else {
+                llenarerror("error sintactico", "espera ID o digito, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera = o !, se encont or(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+    else if (actual.tipo == "parc") {
+        cmp();
+    }
+    else {
+        llenarerror("error sintactico", "espera operador logico, se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+        sig();
+    }
+}
+function idscmp() {
+    if (actual.tipo == "digit" || actual.tipo == "true" || actual.tipo == "false") {
+        llenarerror("error sintactico", "espera un operando logico, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+        sig();
+    }
+    else if (actual.tipo == "and" || actual.tipo == "or") {
+        if (actual.tipo == "and") {
+            traduc += " and ";
+        }
+        if (actual.tipo == "or") {
+            traduc += " or ";
+        }
+        sig();
+        sig();
+        if (actual.tipo == "ID") {
+            traduc += actual.lexema;
+            sig();
+            idscmp();
+        }
+        else if (actual.tipo == "digit") {
+            traduc += actual.lexema;
+            sig();
+            digitcmp();
+        }
+        else if (actual.tipo == "true") {
+            traduc += actual.lexema;
+            sig();
+            idscmp();
+        }
+        else if (actual.tipo == "false") {
+            traduc += actual.lexema;
+            sig();
+            idscmp();
+        }
+        else {
+            llenarerror("error sintactico", "espera ID, e encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+    else if (actual.tipo == "parc") {
+        cmp();
+    }
+    else {
+        llenarerror("error sintactico", "espera operador, se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+        sig();
+    }
+}
+function elif() {
+    if (actual.tipo == "else") {
+        sig();
+        if (actual.tipo == "llavea") {
+            traduccion += espacios + "else:\n";
+            sig();
+            espacios += "\t";
+            todo();
+            if (actual.tipo == "llavec") {
+                sig();
+                espacios = espacios.substr(1);
+            }
+            else {
+                llenarerror("error sintactico", "espera }, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                espacios = espacios.substr(1);
+                sig();
+            }
+        }
+        else if (actual.tipo == "if") {
+            sig();
+            traduc = "elif ";
+            if (actual.tipo == "para") {
+                sig();
+                cmp();
+                traduccion += espacios + traduc + ":\n";
+                if (actual.tipo == "llavea") {
+                    sig();
+                    espacios += "\t";
+                    todo();
+                    if (actual.tipo == "llavec") {
+                        sig();
+                        espacios = espacios.substr(1);
+                        elif();
+                    }
+                    else {
+                        llenarerror("error sintactico", "espera }, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                        espacios = espacios.substr(1);
+                        sig();
+                    }
+                }
+                else {
+                    llenarerror("error sintactico", "espera { , se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                    sig();
+                }
+            }
+            else {
+                llenarerror("error sintactico", "espera ( , se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
         }
     }
 }
@@ -746,7 +1047,7 @@ function sig() {
         actual = new tokens();
         return;
     }
-    // alert (actual.tipo) ;
+    // alert (actual.tipo+"  "+actual.lexema) ;
     actual = listatoken[pos];
 }
 function llenarerror(tip, char, fila, columna) {
