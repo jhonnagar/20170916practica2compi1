@@ -1,9 +1,11 @@
 "use strict";
 var listatoken = [];
 var listatokenerror = [];
+var listavaria = [];
 function myFunction() {
     listatoken = [];
     listatokenerror = [];
+    listavaria = [];
     var temp = document.getElementById("myTextarea").value;
     temp = temp.split("   ").join("");
     temp = temp + "\n";
@@ -431,9 +433,6 @@ function myFunction() {
     html = "";
     json = "";
     sinc();
-    for (var i = 0; i < listatokenerror.length; i++) {
-        alert(listatokenerror[i].lexema);
-    }
     document.getElementById("myTextarea1").value = traduccion;
     document.getElementById("myTextarea2").value = html;
     document.getElementById("myTextarea3").value = json;
@@ -443,6 +442,9 @@ var actual = new tokens();
 var pos = 0;
 var traduccion = " #traduccion del archivO \n";
 var espacios = "";
+var linea = "";
+var tipo = "";
+var nombre = "";
 var traduc = "hola";
 var traduchtml = "hola";
 var html = new String("\b");
@@ -462,9 +464,13 @@ function sinc() {
         sinc();
     }
     else if (actual.tipo == "int" || actual.tipo == "string" || actual.tipo == "double" || actual.tipo == "char" || actual.tipo == "bool") {
+        tipo = actual.lexema;
+        linea = actual.fila;
         sig();
         if (actual.tipo == "ID") {
             traduc = actual.lexema;
+            nombre = actual.lexema;
+            llenarvaria(tipo, nombre, linea);
             sig();
             if (actual.tipo == "igual" || actual.tipo == "puntocoma" || actual.tipo == "coma") {
                 variable();
@@ -525,6 +531,9 @@ function variable() {
         sig();
         traduc += ",";
         if (actual.tipo == "ID") {
+            nombre = actual.lexema;
+            linea = actual.fila;
+            llenarvaria(tipo, nombre, linea);
             traduc += actual.lexema;
             sig();
             variable();
@@ -550,7 +559,7 @@ function valores() {
         sig();
         operandos();
     }
-    else if (actual.tipo == "valor") {
+    else if (actual.tipo == "valor" || actual.tipo == "true" || actual.tipo == "false") {
         traduc += "\"" + actual.lexema + "\"";
         sig();
         cadenas();
@@ -1067,7 +1076,7 @@ function operandos() {
             sig();
             ids();
         }
-        else if (actual.tipo == "valor") {
+        else if (actual.tipo == "valor" || actual.tipo == "true" || actual.tipo == "false") {
             var l = traduc.length;
             l--;
             traduc = traduc.slice(0, l);
@@ -1102,7 +1111,7 @@ function cadenas() {
             sig();
             operandos();
         }
-        else if (actual.tipo == "valor") {
+        else if (actual.tipo == "valor" || actual.tipo == "true" || actual.tipo == "false") {
             traduc += "\"" + actual.lexema + "\"";
             sig();
             cadenas();
@@ -1138,7 +1147,7 @@ function ids() {
             sig();
             operandos();
         }
-        else if (actual.tipo == "valor") {
+        else if (actual.tipo == "valor" || actual.tipo == "true" || actual.tipo == "false") {
             var l = traduc.length;
             l--;
             traduc = traduc.slice(0, l);
@@ -1266,8 +1275,12 @@ function todo() {
         todo();
     }
     else if (actual.tipo == "int" || actual.tipo == "string" || actual.tipo == "double" || actual.tipo == "char" || actual.tipo == "bool") {
+        tipo = actual.lexema;
+        linea = actual.fila;
         sig();
         if (actual.tipo == "ID") {
+            nombre = actual.lexema;
+            llenarvaria(tipo, nombre, linea);
             traduc = actual.lexema;
             sig();
             if (actual.tipo == "igual" || actual.tipo == "puntocoma" || actual.tipo == "coma") {
@@ -1880,4 +1893,92 @@ function tokens() {
     this.tipo = null;
     this.fila = null;
     this.columna = null;
+}
+function llenarvaria(tipo, nombre, linea) {
+    var temp = new varia();
+    temp.tipo = tipo;
+    temp.nombre = nombre;
+    temp.linea = linea;
+    listavaria.push(temp);
+}
+function varia() {
+    this.tipo = null;
+    this.nombre = null;
+    this.linea = null;
+}
+function leerArchivo(e) {
+    var archivo = e.target.files[0];
+    if (!archivo) {
+        return;
+    }
+    var lector = new FileReader();
+    lector.onload = function (e) {
+        var contenido = e.target.result;
+        mostrarContenido(contenido);
+    };
+    lector.readAsText(archivo);
+}
+function mostrarContenido(contenido) {
+    var elemento = document.getElementById('myTextarea');
+    elemento.innerHTML = contenido;
+}
+document.getElementById('file-input')
+    .addEventListener('change', leerArchivo, false);
+function saveTextAsFile(nombre, contenido) {
+    var textToWrite = contenido;
+    //  create a new Blob (html5 magic) that conatins the data from your form feild
+    var textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' });
+    // Specify the name of the file to be saved
+    var fileNameToSaveAs = nombre;
+    // Optionally allow the user to choose a file name by providing 
+    // an imput field in the HTML and using the collected data here
+    // var fileNameToSaveAs = txtFileName.text;
+    // create a link for our script to 'click'
+    var downloadLink = document.createElement("a");
+    //  supply the name of the file (from the var above).
+    // you could create the name here but using a var
+    // allows more flexability later.
+    downloadLink.download = fileNameToSaveAs;
+    // provide text for the link. This will be hidden so you
+    // can actually use anything you want.
+    downloadLink.innerHTML = "My Hidden Link";
+    // allow our code to work in webkit & Gecko based browsers
+    // without the need for a if / else block.
+    window.URL = window.URL || window.webkitURL;
+    // Create the link Object.
+    downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+    // when link is clicked call a function to remove it from
+    // the DOM in case user wants to save a second file.
+    downloadLink.onclick = destroyClickedElement;
+    // make sure the link is hidden.
+    downloadLink.style.display = "none";
+    // add the link to the DOM
+    document.body.appendChild(downloadLink);
+    // click the new link
+    downloadLink.click();
+}
+function destroyClickedElement(event) {
+    // remove the link from the DOM
+    document.body.removeChild(event.target);
+}
+function guardararchivo() {
+    saveTextAsFile("resultado.cs", document.getElementById("myTextarea").value);
+}
+function reporte() {
+    var cabeza = "<!DOCTYPE html> \n <html>\n<body>\n<table>\n" +
+        "<tr><td>id</td><td>tipo erro</td><td>linea</td><td>columna</td><td>descripcion</td></tr>\n";
+    for (var i = 0; i < listatokenerror.length; i++) {
+        cabeza += "<tr><td>" + i + "</td><td>" + listatokenerror[i].tipo + "</td><td>" + listatokenerror[i].fila + "</td><td>" + listatokenerror[i].columna + "</td><td>" + listatokenerror[i].lexema + "</td></tr>\n";
+    }
+    cabeza += "<*table></body></html>";
+    saveTextAsFile("reporte.html", cabeza);
+}
+function repovaria() {
+    var cabeza = "<!DOCTYPE html> \n <html>\n<body>\n<table>\n" +
+        "<tr><td>id</td><td>tipo</td><td>nombre</td><td>linea</td></tr>\n";
+    for (var i = 0; i < listavaria.length; i++) {
+        cabeza += "<tr><td>" + i + "</td><td>" + listavaria[i].tipo + "</td><td>" + listavaria[i].nombre + "</td><td>" + listavaria[i].linea + "</td></tr>\n";
+    }
+    cabeza += "<table></body></html>";
+    saveTextAsFile("variable.html", cabeza);
 }
