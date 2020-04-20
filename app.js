@@ -365,7 +365,7 @@ function myFunction() {
                         i--;
                     }
                     else if (lexema == "div") {
-                        llenar(lexema, columna, fila, "div");
+                        llenar(lexema, columna, fila, "div1");
                         lexema = "";
                         estado = 0;
                         i--;
@@ -428,11 +428,15 @@ function myFunction() {
     actual = listatoken[0];
     traduccion = " #traduccion del archivO \n";
     espacios = "";
+    html = "";
+    json = "";
     sinc();
     for (var i = 0; i < listatokenerror.length; i++) {
         alert(listatokenerror[i].lexema);
     }
     document.getElementById("myTextarea1").value = traduccion;
+    document.getElementById("myTextarea2").value = html;
+    document.getElementById("myTextarea3").value = json;
 }
 var tam = 0;
 var actual = new tokens();
@@ -440,6 +444,7 @@ var pos = 0;
 var traduccion = " #traduccion del archivO \n";
 var espacios = "";
 var traduc = "hola";
+var traduchtml = "hola";
 var html = new String("\b");
 var json = new String("\b");
 function sinc() {
@@ -557,7 +562,12 @@ function valores() {
     }
     else if (actual.tipo == "comilla") {
         sig();
+        traduc = "";
+        traduchtml = "";
         HTML();
+        html += traduchtml;
+        json += traduc;
+        traduc = " ";
         if (actual.tipo == "puntocoma") {
             sig();
         }
@@ -571,6 +581,472 @@ function HTML() {
     if (actual.tipo == "comilla") {
         sig();
         return;
+    }
+    else if (actual.tipo == "menor") {
+        traduchtml += actual.lexema;
+        sig();
+        if (actual.tipo == "div") {
+            return;
+        }
+        else if (actual.tipo == "html") {
+            traduchtml += actual.lexema;
+            sig();
+            traduc += "\"html\":{\n";
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                HTML();
+                finhtml();
+            }
+        }
+        else if (actual.tipo == "head") {
+            traduchtml += actual.lexema;
+            sig();
+            traduc += "\"head\":{\n";
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                HTML();
+                finhead();
+            }
+        }
+        else if (actual.tipo == "body") {
+            traduchtml += actual.lexema;
+            sig();
+            traduc += "\"body\":{\n";
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                HTML();
+                finbody();
+            }
+        }
+        else if (actual.tipo == "title") {
+            traduchtml += actual.lexema;
+            sig();
+            traduc += "\"title\":{\n";
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                HTML();
+                fintitle();
+            }
+        }
+        else if (actual.tipo == "div1") {
+            traduchtml += actual.lexema;
+            sig();
+            traduc += "\"div\":{\n";
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                HTML();
+                findiv();
+            }
+        }
+        else if (actual.tipo == "br") {
+            traduchtml += actual.lexema;
+            sig();
+            traduc += "\"br\":\n";
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                HTML();
+            }
+        }
+        else if (actual.tipo == "input") {
+            traduchtml += actual.lexema;
+            sig();
+            traduc += "\"input\":\n";
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                HTML();
+            }
+        }
+        else if (actual.tipo == "p") {
+            traduchtml += actual.lexema;
+            sig();
+            traduc += "\"p\":{\n";
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                HTML();
+                finp();
+            }
+        }
+        else if (actual.tipo == "button") {
+            traduchtml += actual.lexema;
+            sig();
+            traduc += "\"button\":{\n";
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                HTML();
+                finbutton();
+            }
+        }
+        else if (actual.tipo == "label") {
+            traduchtml += actual.lexema;
+            sig();
+            traduc += "\"label\":{\n";
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                HTML();
+                finlabel();
+            }
+        }
+        else if (actual.tipo == "h1") {
+            traduchtml += actual.lexema;
+            sig();
+            traduc += "\"h1\":{\n";
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                HTML();
+                finh1();
+            }
+        }
+        else if (actual.tipo == "h2") {
+            traduchtml += actual.lexema;
+            sig();
+            traduc += "\"h2\":{\n";
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                HTML();
+                finh2();
+            }
+        }
+        else if (actual.tipo == "h3") {
+            traduchtml += actual.lexema;
+            sig();
+            traduc += "\"h3\":{\n";
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                HTML();
+                finh3();
+            }
+        }
+        else if (actual.tipo == "h4") {
+            traduchtml += actual.lexema;
+            sig();
+            traduc += "\"h4\":{\n";
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                HTML();
+                finh4();
+            }
+        }
+    }
+    else {
+        traduc += "\"texto \": \"" + actual.lexema + " ";
+        traduchtml += actual.lexema + " ";
+        sig();
+        loquesea();
+        HTML();
+    }
+}
+function loquesea() {
+    if (actual.tipo == "menor" || actual.tipo == "comilla") {
+        traduc += "\" ";
+        return;
+    }
+    else {
+        traduc += actual.lexema + " ";
+        traduchtml += actual.lexema + " ";
+        sig();
+        loquesea();
+    }
+}
+function finhtml() {
+    if (actual.tipo == "div") {
+        traduchtml += actual.lexema;
+        sig();
+        if (actual.tipo == "html") {
+            traduchtml += actual.lexema;
+            sig();
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                traduc += "}\n";
+                HTML();
+            }
+            else {
+                llenarerror("error sintactico", "espera mayot , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera html , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+}
+function finhead() {
+    if (actual.tipo == "div") {
+        traduchtml += actual.lexema;
+        sig();
+        if (actual.tipo == "head") {
+            traduchtml += actual.lexema;
+            sig();
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                traduc += "}\n";
+                HTML();
+            }
+            else {
+                llenarerror("error sintactico", "espera mayor, se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera head , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+}
+function finbody() {
+    if (actual.tipo == "div") {
+        traduchtml += actual.lexema;
+        sig();
+        if (actual.tipo == "body") {
+            traduchtml += actual.lexema;
+            sig();
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                traduc += "}\n";
+                HTML();
+            }
+            else {
+                llenarerror("error sintactico", "espera mayor, se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera body , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+}
+function fintitle() {
+    if (actual.tipo == "div") {
+        traduchtml += actual.lexema;
+        sig();
+        if (actual.tipo == "title") {
+            traduchtml += actual.lexema;
+            sig();
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                traduc += "}\n";
+                HTML();
+            }
+            else {
+                llenarerror("error sintactico", "espera mayot , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera title , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+}
+function findiv() {
+    if (actual.tipo == "div") {
+        traduchtml += actual.lexema;
+        sig();
+        if (actual.tipo == "div1") {
+            traduchtml += actual.lexema;
+            sig();
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                traduc += "}\n";
+                HTML();
+            }
+            else {
+                llenarerror("error sintactico", "espera mayot , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera div , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+}
+function finp() {
+    if (actual.tipo == "div") {
+        traduchtml += actual.lexema;
+        sig();
+        if (actual.tipo == "p") {
+            traduchtml += actual.lexema;
+            sig();
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                traduc += "}\n";
+                HTML();
+            }
+            else {
+                llenarerror("error sintactico", "espera mayot , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera p , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+}
+function finlabel() {
+    if (actual.tipo == "div") {
+        traduchtml += actual.lexema;
+        sig();
+        if (actual.tipo == "label") {
+            traduchtml += actual.lexema;
+            sig();
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                traduc += "}\n";
+                HTML();
+            }
+            else {
+                llenarerror("error sintactico", "espera mayot , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera label , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+}
+function finbutton() {
+    if (actual.tipo == "div") {
+        traduchtml += actual.lexema;
+        sig();
+        if (actual.tipo == "button") {
+            traduchtml += actual.lexema;
+            sig();
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                traduc += "}\n";
+                HTML();
+            }
+            else {
+                llenarerror("error sintactico", "espera mayot , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera button , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+}
+function finh1() {
+    if (actual.tipo == "div") {
+        traduchtml += actual.lexema;
+        sig();
+        if (actual.tipo == "h1") {
+            traduchtml += actual.lexema;
+            sig();
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                traduc += "}\n";
+                HTML();
+            }
+            else {
+                llenarerror("error sintactico", "espera mayot , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera h1 , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+}
+function finh2() {
+    if (actual.tipo == "div") {
+        traduchtml += actual.lexema;
+        sig();
+        if (actual.tipo == "h2") {
+            traduchtml += actual.lexema;
+            sig();
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                traduc += "}\n";
+                HTML();
+            }
+            else {
+                llenarerror("error sintactico", "espera mayot , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera h2 , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+}
+function finh3() {
+    if (actual.tipo == "div") {
+        traduchtml += actual.lexema;
+        sig();
+        if (actual.tipo == "h3") {
+            traduchtml += actual.lexema;
+            sig();
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                traduc += "}\n";
+                HTML();
+            }
+            else {
+                llenarerror("error sintactico", "espera mayot , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera h3 , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+}
+function finh4() {
+    if (actual.tipo == "div") {
+        traduchtml += actual.lexema;
+        sig();
+        if (actual.tipo == "h4") {
+            traduchtml += actual.lexema;
+            sig();
+            if (actual.tipo == "mayor") {
+                traduchtml += actual.lexema + "\n";
+                sig();
+                traduc += "}\n";
+                HTML();
+            }
+            else {
+                llenarerror("error sintactico", "espera mayot , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera h4 , se encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
     }
 }
 function operandos() {
