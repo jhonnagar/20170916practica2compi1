@@ -848,6 +848,183 @@ function todo() {
             sig();
         }
     }
+    else if (actual.tipo == "do") {
+        sig();
+        traduccion += espacios + "while true:\n";
+        if (actual.tipo == "llavea") {
+            sig();
+            espacios += "\t";
+            todo();
+            if (actual.tipo == "llavec") {
+                sig();
+                if (actual.tipo == "while") {
+                    sig();
+                    traduc = "if ";
+                    sig();
+                    cmp();
+                    traduccion += espacios + traduc + ":\n";
+                    traduccion += espacios + "\tbreak \n";
+                }
+                espacios = espacios.substr(1);
+                todo();
+            }
+            else {
+                llenarerror("error sintactico", "espera }, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                espacios = espacios.substr(1);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera { , se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+    else if (actual.tipo == "return") {
+        sig();
+        traduc = espacios + "return ";
+        if (actual.tipo == "puntocoma") {
+            sig();
+            traduccion += traduc + "\n";
+            todo();
+        }
+        else {
+            valores();
+            traduccion += traduc + "\n";
+            todo();
+        }
+    }
+    else if (actual.tipo == "break") {
+        sig();
+        traduc = espacios + "break";
+        if (actual.tipo == "puntocoma") {
+            sig();
+            traduccion += traduc + "\n";
+            todo();
+        }
+        else {
+            llenarerror("error sintactico", "espera puntocoma, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+    else if (actual.tipo == "continue") {
+        sig();
+        traduc = espacios + "continue";
+        if (actual.tipo == "puntocoma") {
+            sig();
+            traduccion += traduc + "\n";
+            todo();
+        }
+        else {
+            llenarerror("error sintactico", "espera puntocoma, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+    else if (actual.tipo == "for") {
+        traduc = espacios + "for ";
+        sig();
+        if (actual.tipo == "para") {
+            sig();
+            ford();
+            traduccion += traduc + "\n";
+            if (actual.tipo == "llavea") {
+                sig();
+                espacios += "\t";
+                todo();
+                if (actual.tipo == "llavec") {
+                    sig();
+                    espacios = espacios.substr(1);
+                    todo();
+                }
+                else {
+                    llenarerror("error sintactico", "espera }, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                    espacios = espacios.substr(1);
+                    sig();
+                }
+            }
+            else {
+                llenarerror("error sintactico", "espera { , se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+    }
+}
+function ford() {
+    if (actual.tipo == "int") {
+        sig();
+        if (actual.tipo == "ID") {
+            traduc += actual.lexema + " in a range ";
+            sig();
+            if (actual.tipo == "igual") {
+                sig();
+                if (actual.tipo == "digit") {
+                    traduc += "(" + actual.lexema;
+                    sig();
+                    if (actual.tipo == "puntocoma") {
+                        sig();
+                        if (actual.tipo == "ID") {
+                            sig();
+                            if (actual.tipo == "mayor" || actual.tipo == "menor" || actual.tipo == "igual") {
+                                sig();
+                                if (actual.tipo == "digit") {
+                                    traduc += "," + actual.lexema + ")";
+                                    sig();
+                                    if (actual.tipo == "puntocoma") {
+                                        sig();
+                                        sig();
+                                        sig();
+                                        sig();
+                                        if (actual.tipo == "parc") {
+                                            sig();
+                                        }
+                                        else {
+                                            llenarerror("error sintactico", "espera ), se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                                            sig();
+                                        }
+                                    }
+                                    else {
+                                        llenarerror("error sintactico", "espera puntocoma, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                                        sig();
+                                    }
+                                }
+                                else {
+                                    llenarerror("error sintactico", "espera digit, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                                    sig();
+                                }
+                            }
+                            else {
+                                llenarerror("error sintactico", "espera (, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                                sig();
+                            }
+                        }
+                        else {
+                            llenarerror("error sintactico", "espera ID, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                            sig();
+                        }
+                    }
+                    else {
+                        llenarerror("error sintactico", "espera puntocoma, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                        sig();
+                    }
+                }
+                else {
+                    llenarerror("error sintactico", "espera digito, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                    sig();
+                }
+            }
+            else {
+                llenarerror("error sintactico", "espera igual, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+                sig();
+            }
+        }
+        else {
+            llenarerror("error sintactico", "espera id, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+            sig();
+        }
+    }
+    else {
+        llenarerror("error sintactico", "espera int, se  encontor(" + actual.tipo + ")", actual.fila, actual.columna);
+        sig();
+    }
 }
 function cmp() {
     if (actual.tipo == "ID") {
